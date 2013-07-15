@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="all_lines">
+        <item>12</item>
+        <item>37</item>
+        <item>60 - R1</item>
+        <item>24</item>
+    </string-array>
+</resources>

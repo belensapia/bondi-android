@@ -8,6 +8,8 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -21,6 +23,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.bondi_android.checkin.CheckinActivity"
+            android:label="@string/title_activity_checkin" >
+        </activity>
+        <activity
+            android:name="com.bondi_android.tracking.TrackingLineActivity"
+            android:label="@string/title_activity_tracking_line" >
         </activity>
     </application>
 

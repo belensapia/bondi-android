@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">bondi-android</string>
+    <string name="app_name">Bondi On Time</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="checkinButton">Checkin</string>
+    <string name="searchButton">Buscar</string>
+    <string name="title_activity_checkin">CheckinActivity</string>
+    <string name="checkin.spinnerTitle">¿En qué linea estás?</string>
+    <string name="checkin.okButton">Arriba!</string>
+    <string name="title_activity_tracking_line">¿En qué linea estás?</string>
+    <string name="tracking_selected_line">Estas viajando en la linea </string>
+    <string name="stop_tracking_button_text">¡Me bajé!</string>
 
 </resources>

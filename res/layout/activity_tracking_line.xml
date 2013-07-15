@@ -6,17 +6,22 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
+    tools:context=".TrackingLineActivity" >
 
-    <Button
-        android:id="@+id/checkinOkButton"
+    <TextView
+        android:id="@+id/trackingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="112dp"
-        android:text="@string/checkinButton"
-        android:onClick="checkin" 
-        />
+        android:text="@string/tracking_selected_line" />
+
+    <Button
+        android:id="@+id/stop_tracking_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/trackingText"
+        android:layout_below="@+id/trackingText"
+        android:layout_marginTop="36dp"
+        android:text="@string/stop_tracking_button_text"
+        android:onClick="stopTracking" />
 
 </RelativeLayout>
