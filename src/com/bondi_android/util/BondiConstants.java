@@ -14,4 +14,9 @@ public class BondiConstants {
 	// A fast frequency ceiling in milliseconds
 	public static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND
 			* FASTEST_INTERVAL_IN_SECONDS;
+	
+	public static final String REST_USER = "bondi";
+	public static final String REST_PASSWORD = "bondi";
+	public static final String TRACKING_SERVICE_URL = "https://bondiontime.com.ar/tracking/";
+	
 }

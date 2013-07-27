@@ -1,5 +1,10 @@
 package com.bondi_android.tracking;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,14 +20,19 @@ import android.widget.Toast;
 
 import com.bondi_android.R;
 import com.bondi_android.checkin.CheckinActivity;
+import com.bondi_android.util.BondiConstants;
 
 public class TrackingLineActivity extends Activity implements LocationListener {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 	private static final int UPDATE_RATE = 100;
+	private static final String LINE_SERVICE_MAP_KEY = "line";
+	private static final String LONGITUDE_SERVICE_MAP_KEY = "longitude";
+	private static final String LATITUDE_SERVICE_MAP_KEY = "latitude";
 
 	private LocationManager locationManager;
 	private Location currentLocation;
 	private TextView text;
+	private String selectedLine;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +42,7 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 		// Add selected line to the text.
 		text = (TextView) findViewById(R.id.trackingText);
 		Intent intent = this.getIntent();
-		String selectedLine = intent
+		selectedLine = intent
 				.getStringExtra(CheckinActivity.SELECTED_LINE);
 		text.setText(text.getText() + selectedLine);
 
@@ -102,11 +112,19 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 			 * receiving updates it can't use. Once the long-running work is
 			 * done, set the fastest interval back to a fast value.
 			 */
+			
+			Map<String, String> parameters = new HashMap<String, String>();
+			parameters.put(LINE_SERVICE_MAP_KEY, this.selectedLine);
+			parameters.put(LATITUDE_SERVICE_MAP_KEY, Double.toString(location.getLatitude()));
+			parameters.put(LONGITUDE_SERVICE_MAP_KEY, Double.toString(location.getLongitude()));
+			
+			JSONObject response = PostAsyncBondiConnection.executePostService(BondiConstants.TRACKING_SERVICE_URL, parameters);
+			Toast.makeText(this, response.toString(), Toast.LENGTH_SHORT).show();
 		}
 	}
 
 	public void stopTracking(View view) {
-		// TODO Stop tracking
+		// The finish calls #onDestroy which removes the listener from the locationManager
 		finish();
 	}
 
