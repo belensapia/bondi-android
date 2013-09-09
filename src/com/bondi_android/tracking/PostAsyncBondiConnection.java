@@ -1,48 +1,50 @@
 package com.bondi_android.tracking;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ContextWrapper;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.widget.Toast;
 
 import com.bondi_android.util.BondiConstants;
+import com.bondi_android.util.BondiUtils;
 
 public class PostAsyncBondiConnection {
 
-	private static final int CONNECTION_TIMEOUT = 10000;
-	private static final int DATARETRIEVAL_TIMEOUT = 10000;
-
-	//This is going to make it run in the background
+	// This is going to make it run in the background
 	private static class LongRunningGetIO extends
-			AsyncTask<URL, Void, JSONObject> {
-		
+			AsyncTask<String, Void, JSONObject> {
+
 		private Map<String, String> parameters;
-		
-		public LongRunningGetIO(Map<String, String> params) {
-			if (params==null) {
-				//parameters can't be null
+
+		// Who called the longRunning
+		private ContextWrapper context;
+
+		public LongRunningGetIO(Map<String, String> params, ContextWrapper context) {
+			if (params == null) {
+				// parameters can't be null
 				params = new HashMap<String, String>();
 			}
 			this.parameters = params;
+			this.context = context;
 		}
-		
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		protected JSONObject doInBackground(URL... urls) {
+		protected JSONObject doInBackground(String... urls) {
 			disableConnectionReuseIfNecessary();
 
 			if (urls == null || urls.length == 0) {
@@ -50,56 +52,37 @@ public class PostAsyncBondiConnection {
 				return null;
 			}
 
-			HttpURLConnection urlConnection = null;
 			try {
-				// create connection
-				urlConnection = (HttpURLConnection) urls[0].openConnection();
+				DefaultHttpClient httpclient = new DefaultHttpClient();
+				HttpPut httput = new HttpPut(urls[0]);
+				JSONObject holder = new JSONObject();
 
-				// Encode
-				String param = "user=" + URLEncoder.encode(BondiConstants.REST_USER, "UTF-8")
-						+ "&password=" + URLEncoder.encode(BondiConstants.REST_PASSWORD, "UTF-8");
-				
-				//Add all the parameters
+				// Encode user and pass.
+				holder.put("user",
+						URLEncoder.encode(BondiConstants.REST_USER, "UTF-8"));
+				holder.put("password", URLEncoder.encode(
+						BondiConstants.REST_PASSWORD, "UTF-8"));
+				holder.put("deviceId", BondiUtils.getDeviceID(this.context));
+
 				for (String key : parameters.keySet()) {
-					param.concat("&"+key+"="+parameters.get(key));
+					holder.put(key, parameters.get(key));
 				}
 
-				urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-				urlConnection.setReadTimeout(DATARETRIEVAL_TIMEOUT);
+				StringEntity se = new StringEntity(holder.toString());
+				httput.setEntity(se);
+				httput.setHeader("Accept", "application/json");
+				httput.setHeader("Content-type", "application/json");
 
-				// set the output to true, indicating you are
-				// outputting(uploading) POST data
-				urlConnection.setDoOutput(true);
-				// once you set the output to true, you don't really need to set
-				// the request method to post, but I'm doing it anyway
-				urlConnection.setRequestMethod("POST");
+				ResponseHandler responseHandler = new BasicResponseHandler();
+				String response = httpclient.execute(httput, responseHandler);
+				return new JSONObject(response);
 
-				urlConnection
-						.setFixedLengthStreamingMode(param.getBytes().length);
-				urlConnection.setRequestProperty("Content-Type",
-						"application/x-www-form-urlencoded");
-				// send the POST out
-				PrintWriter out = new PrintWriter(
-						urlConnection.getOutputStream());
-				out.print(param);
-				out.close();
-
-				// create JSON object from content
-				InputStream in = new BufferedInputStream(
-						urlConnection.getInputStream());
-				return new JSONObject(getResponseText(in));
-
-			} catch (SocketTimeoutException e) {
-				// data retrieval or connection timed out
+			} catch (ClientProtocolException e) {
+				// Do nothing
 			} catch (IOException e) {
-				// could not read response body
-				// (could not create input stream)
+				// Do nothing
 			} catch (JSONException e) {
-				// The response couldn't be transformed to json.
-			} finally {
-				if (urlConnection != null) {
-					urlConnection.disconnect();
-				}
+				// Do nothing
 			}
 
 			return null;
@@ -108,24 +91,17 @@ public class PostAsyncBondiConnection {
 		@Override
 		protected void onPostExecute(JSONObject results) {
 			// Do something after the execution
+			if (results != null) {
+				Toast.makeText(context, results.toString(), Toast.LENGTH_SHORT)
+						.show();
+			}
 		}
 	}
 
-	public static JSONObject executePostService(String serviceUrl, Map<String, String> parameters) {
-		try {
-			URL url = new URL(serviceUrl);
-			AsyncTask<URL, Void, JSONObject> result = new LongRunningGetIO(parameters)
-					.execute(url);
-			return result.get();
-		} catch (MalformedURLException e) {
-			// Do nothing
-		} catch (InterruptedException e) {
-			// Do nothing
-		} catch (ExecutionException e) {
-			// Do nothing
-		}
-		// The service couldn't be executed.
-		return null;
+	public static void executePostService(String serviceUrl,
+			Map<String, String> parameters, ContextWrapper context) {
+		// Execute in the background
+		new LongRunningGetIO(parameters, context).execute(serviceUrl);
 	}
 
 	/**
@@ -138,9 +114,4 @@ public class PostAsyncBondiConnection {
 		}
 	}
 
-	private static String getResponseText(InputStream inStream) {
-		// very nice trick from
-		// http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
-		return new Scanner(inStream).useDelimiter("\\A").next();
-	}
 }

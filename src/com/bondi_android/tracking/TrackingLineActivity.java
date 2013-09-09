@@ -3,8 +3,6 @@ package com.bondi_android.tracking;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -23,8 +22,12 @@ import com.bondi_android.checkin.CheckinActivity;
 import com.bondi_android.util.BondiConstants;
 
 public class TrackingLineActivity extends Activity implements LocationListener {
-	private static final int TWO_MINUTES = 1000 * 60 * 2;
-	private static final int UPDATE_RATE = 100;
+	private static final int TWO_MINUTES = 1000 * 60 * 2; // in milliseconds
+	// TODO Buscar pa que sea infinito el tiempo
+	private static final int TIME_UPDATE_RATE = 100;// 0 * 60 * 2; // in
+													// milliseconds
+	private static final float DISTANCE_UPDATE_RATE = 100; // in meters
+
 	private static final String LINE_SERVICE_MAP_KEY = "line";
 	private static final String LONGITUDE_SERVICE_MAP_KEY = "longitude";
 	private static final String LATITUDE_SERVICE_MAP_KEY = "latitude";
@@ -42,8 +45,7 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 		// Add selected line to the text.
 		text = (TextView) findViewById(R.id.trackingText);
 		Intent intent = this.getIntent();
-		selectedLine = intent
-				.getStringExtra(CheckinActivity.SELECTED_LINE);
+		selectedLine = intent.getStringExtra(CheckinActivity.SELECTED_LINE);
 		text.setText(text.getText() + selectedLine);
 
 		// Getting LocationManager object
@@ -57,15 +59,17 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 		// Getting the name of the provider that meets the criteria
 		String newProvider = locationManager.getBestProvider(criteria, false);
 
-		if (newProvider != null && !newProvider.equals("") && !newProvider.equals(oldProvider)) {
-			if (oldProvider!=null && locationManager!=null) {
+		if (newProvider != null && !newProvider.equals("")
+				&& !newProvider.equals(oldProvider)) {
+			if (oldProvider != null && locationManager != null) {
 				locationManager.removeUpdates(this);
 			}
 
 			// Get the location from the given provider
 			currentLocation = locationManager.getLastKnownLocation(newProvider);
 
-			locationManager.requestLocationUpdates(newProvider, UPDATE_RATE, 1, this);
+			locationManager.requestLocationUpdates(newProvider,
+					TIME_UPDATE_RATE, DISTANCE_UPDATE_RATE, this);
 
 			if (currentLocation != null)
 				onLocationChanged(currentLocation);
@@ -73,15 +77,15 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 				Toast.makeText(getBaseContext(), "No location was cached",
 						Toast.LENGTH_SHORT).show();
 			return;
-		} 
+		}
 
-		//If here, there's no new provider.
-		if (oldProvider==null) {
+		// If here, there's no new provider.
+		if (oldProvider == null) {
 			Toast.makeText(getBaseContext(), "No Provider Found",
 					Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		if (locationManager != null) {
@@ -112,22 +116,41 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 			 * receiving updates it can't use. Once the long-running work is
 			 * done, set the fastest interval back to a fast value.
 			 */
-			
+
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put(LINE_SERVICE_MAP_KEY, this.selectedLine);
-			parameters.put(LATITUDE_SERVICE_MAP_KEY, Double.toString(location.getLatitude()));
-			parameters.put(LONGITUDE_SERVICE_MAP_KEY, Double.toString(location.getLongitude()));
-			
-			JSONObject response = PostAsyncBondiConnection.executePostService(BondiConstants.TRACKING_SERVICE_URL, parameters);
-			Toast.makeText(this, response.toString(), Toast.LENGTH_SHORT).show();
+			parameters.put(LATITUDE_SERVICE_MAP_KEY,
+					Double.toString(location.getLatitude()));
+			parameters.put(LONGITUDE_SERVICE_MAP_KEY,
+					Double.toString(location.getLongitude()));
+
+			PostAsyncBondiConnection.executePostService(
+					BondiConstants.TRACKING_SERVICE_URL, parameters, this);
+
+			// TODO Make this pretty =)
+			// Its to remind the user to close the app if its out of the bus.
+			final int delay = 5000;
+			final Handler handler = new Handler();
+			final Runnable r = new Runnable() {
+				public void run() {
+					Toast.makeText(getApplicationContext(), "RUN!",
+							Toast.LENGTH_SHORT).show();
+					// TODO Call pop up.
+				}
+			};
+			handler.postDelayed(r, delay);
+
+			// To delete the task: handler.removeCallbacks(r);
 		}
 	}
 
 	public void stopTracking(View view) {
-		// The finish calls #onDestroy which removes the listener from the locationManager
+		// The finish calls #onDestroy which removes the listener from the
+		// locationManager
 		finish();
 	}
 
+	
 	/**
 	 * Determines whether one Location reading is better than the current
 	 * Location fix
@@ -201,11 +224,11 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
+		// Do nothing
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
+		// Do nothing
 	}
 }
