@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -35,8 +35,8 @@
             android:label="@string/title_activity_tracking_line" >
         </activity>
         <activity
-            android:name="com.bondi_android.TestPopupActivity"
-            android:label="@string/title_activity_test_popup" >
+            android:name="com.bondi_android.tracking.NotificationReceiverActivity"
+            android:label="@string/tracking_reminder_notification_title" >
         </activity>
     </application>
 

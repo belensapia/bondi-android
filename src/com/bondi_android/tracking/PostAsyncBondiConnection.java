@@ -28,15 +28,15 @@ public class PostAsyncBondiConnection {
 	private static class LongRunningGetIO extends
 			AsyncTask<String, Void, JSONObject> {
 
-		private Map<String, String> parameters;
+		private Map<String, Object> parameters;
 
 		// Who called the longRunning
 		private ContextWrapper context;
 
-		public LongRunningGetIO(Map<String, String> params, ContextWrapper context) {
+		public LongRunningGetIO(Map<String, Object> params, ContextWrapper context) {
 			if (params == null) {
 				// parameters can't be null
-				params = new HashMap<String, String>();
+				params = new HashMap<String, Object>();
 			}
 			this.parameters = params;
 			this.context = context;
@@ -99,7 +99,7 @@ public class PostAsyncBondiConnection {
 	}
 
 	public static void executePostService(String serviceUrl,
-			Map<String, String> parameters, ContextWrapper context) {
+			Map<String, Object> parameters, ContextWrapper context) {
 		// Execute in the background
 		new LongRunningGetIO(parameters, context).execute(serviceUrl);
 	}
