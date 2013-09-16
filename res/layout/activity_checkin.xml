@@ -12,27 +12,27 @@
         android:id="@+id/checkinSpinnerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/spinnerLinea"
+        android:layout_alignLeft="@+id/autoCompleteLinea"
         android:layout_alignParentTop="true"
         android:layout_marginTop="26dp"
         android:text="@string/checkin.spinnerTitle" />
 
-    <Spinner
-        android:id="@+id/spinnerLinea"
-        android:layout_width="wrap_content"
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteLinea"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkinSpinnerText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp" />
+        android:layout_marginTop="28dp"
+        android:completionThreshold="1" />
 
     <Button
         android:id="@+id/checkinOkButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/spinnerLinea"
-        android:layout_below="@+id/spinnerLinea"
+        android:layout_alignLeft="@+id/autoCompleteLinea"
+        android:layout_below="@+id/autoCompleteLinea"
         android:layout_marginTop="22dp"
-        android:text="@string/checkin.okButton" 
-        android:onClick="startTracking"/>
+        android:onClick="startTracking"
+        android:text="@string/checkin.okButton" />
 
 </RelativeLayout>
