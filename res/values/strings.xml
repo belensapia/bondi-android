@@ -16,5 +16,6 @@
     <string name="tracking_reminder_notification_content">Si te bajaste, dale "Me bajé"</string>
     <string name="checkin.selectValidBus.title">Esperá</string>
     <string name="checkin.selectValidBus.message">Tenés que elegir una linea de colectivo válida</string>
+    <string name="tracking.gps.disabled">Necesitamos el gps para saber dónde está el colectivo, ¿lo querés prender?</string>
 
 </resources>

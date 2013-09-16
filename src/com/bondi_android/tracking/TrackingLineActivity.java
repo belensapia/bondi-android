@@ -59,6 +59,8 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 		this.reminderHandler = new Handler();
 		this.reminderRunnable = new TrackingReminder(this);
 
+		BondiUtils.checkGPSStatus(this);
+		
 		registerNewBestProvider(null);
 	}
 

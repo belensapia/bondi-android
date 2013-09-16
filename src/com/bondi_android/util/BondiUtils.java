@@ -2,38 +2,50 @@ package com.bondi_android.util;
 
 import java.util.UUID;
 
+import com.bondi_android.R;
+
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.telephony.TelephonyManager;
 
 /**
  * 
  * @author Marcos
- *
+ * 
  */
 public class BondiUtils {
 	private static final int TWO_MINUTES = 1000 * 60 * 2; // in milliseconds
 
-
 	/**
-	 * Returns a unique identifier for the device. For security measures the device id
-	 * is hashed. 
-	 * @param context context from which to take the device id.
+	 * Returns a unique identifier for the device. For security measures the
+	 * device id is hashed.
+	 * 
+	 * @param context
+	 *            context from which to take the device id.
 	 * @return a unique string representing the device.
 	 */
 	public static String getDeviceID(final ContextWrapper context) {
-	    final TelephonyManager tm = (TelephonyManager) context.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+		final TelephonyManager tm = (TelephonyManager) context.getBaseContext()
+				.getSystemService(Context.TELEPHONY_SERVICE);
 
-	    final String tmDevice, tmSerial, androidId;
-	    tmDevice = "" + tm.getDeviceId();
-	    tmSerial = "" + tm.getSimSerialNumber();
-	    androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+		final String tmDevice, tmSerial, androidId;
+		tmDevice = "" + tm.getDeviceId();
+		tmSerial = "" + tm.getSimSerialNumber();
+		androidId = ""
+				+ android.provider.Settings.Secure.getString(
+						context.getContentResolver(),
+						android.provider.Settings.Secure.ANDROID_ID);
 
-	    UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-	    return deviceUuid.toString();
+		UUID deviceUuid = new UUID(androidId.hashCode(),
+				((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
+		return deviceUuid.toString();
 	}
-	
+
 	/**
 	 * Determines whether one Location reading is better than the current
 	 * Location fix
@@ -98,6 +110,40 @@ public class BondiUtils {
 			return provider2 == null;
 		}
 		return provider1.equals(provider2);
+	}
+
+	public static void checkGPSStatus(Context context) {
+		final LocationManager manager = (LocationManager) context
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			buildAlertMessageNoGps(context);
+		}
+
+	}
+
+	private static void buildAlertMessageNoGps(final Context context) {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(context.getResources()
+				.getString(
+						R.string.tracking_gps_disabled))
+				.setCancelable(false)
+				.setPositiveButton("Si",
+						new DialogInterface.OnClickListener() {
+							public void onClick(final DialogInterface dialog,
+									final int id) {
+								context.startActivity(new Intent(
+										android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+							}
+						})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(final DialogInterface dialog,
+							final int id) {
+						dialog.cancel();
+					}
+				});
+		final AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 }
