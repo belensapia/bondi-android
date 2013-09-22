@@ -8,15 +8,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <Button
+    <ImageButton
         android:id="@+id/checkinOkButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="112dp"
-        android:text="@string/checkinButton"
-        android:onClick="checkin" 
-        />
+        android:layout_marginTop="66dp"
+        android:background="@drawable/checkin_button"
+        android:contentDescription="@string/checkinButton"
+        android:onClick="checkin" />
 
 </RelativeLayout>

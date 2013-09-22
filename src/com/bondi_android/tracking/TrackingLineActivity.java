@@ -24,9 +24,7 @@ import com.bondi_android.util.BondiUtils;
 import com.bondi_android.util.TrackingReminder;
 
 public class TrackingLineActivity extends Activity implements LocationListener {
-	// TODO Buscar pa que sea infinito el tiempo
-	private static final int TIME_UPDATE_RATE = 100;// 0 * 60 * 2; // in
-													// milliseconds
+	private static final int TIME_UPDATE_RATE = 1 * 60 * 1000; // 1 min in ms
 	private static final float DISTANCE_UPDATE_RATE = 100; // in meters
 
 	private static final String LINE_SERVICE_MAP_KEY = "bus";
@@ -60,7 +58,7 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 		this.reminderRunnable = new TrackingReminder(this);
 
 		BondiUtils.checkGPSStatus(this);
-		
+
 		registerNewBestProvider(null);
 	}
 
@@ -118,16 +116,14 @@ public class TrackingLineActivity extends Activity implements LocationListener {
 			// to the server
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(LINE_SERVICE_MAP_KEY, this.selectedLine);
-			parameters.put(LATITUDE_SERVICE_MAP_KEY,
-					location.getLatitude());
-			parameters.put(LONGITUDE_SERVICE_MAP_KEY,
-					location.getLongitude());
+			parameters.put(LATITUDE_SERVICE_MAP_KEY, location.getLatitude());
+			parameters.put(LONGITUDE_SERVICE_MAP_KEY, location.getLongitude());
 
 			PostAsyncBondiConnection.executePostService(
 					BondiConstants.TRACKING_SERVICE_URL, parameters, this);
 
 			// Its to remind the user to close the app if its out of the bus.
-			final int delay = 30*60*1000;//30 minutes
+			final int delay = 30 * 60 * 1000;// 30 minutes
 			// First remove any pending reminder to avoid that the reminder gets
 			// call twice
 			reminderHandler.removeCallbacks(reminderRunnable);

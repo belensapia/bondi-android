@@ -6,11 +6,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="checkinButton">Checkin</string>
     <string name="searchButton">Buscar</string>
-    <string name="title_activity_checkin">CheckinActivity</string>
+    <string name="title_activity_checkin">Checkin</string>
     <string name="checkin.spinnerTitle">¿En qué linea estás?</string>
     <string name="checkin.okButton">Arriba!</string>
-    <string name="title_activity_tracking_line">¿En qué linea estás?</string>
-    <string name="tracking_selected_line">Estas viajando en la linea </string>
+    <string name="title_activity_tracking_line">En Viaje</string>
+    <string name="tracking_selected_line">Estas viajando en la linea:</string>
     <string name="stop_tracking_button_text">¡Me bajé!</string>
     <string name="tracking_reminder_notification_title">¿Seguis en viaje?</string>
     <string name="tracking_reminder_notification_content">Si te bajaste, dale "Me bajé"</string>

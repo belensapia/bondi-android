@@ -7,7 +7,7 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is the result activity opened from the notification" >
+        android:text="@string/tracking_reminder_notification_title" >
     </TextView>
 
 </LinearLayout> 
